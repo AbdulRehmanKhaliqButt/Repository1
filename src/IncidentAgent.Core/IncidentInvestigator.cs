@@ -112,7 +112,7 @@ public sealed class IncidentInvestigator : IIncidentInvestigator
 
         var primary = new RootCauseHypothesis(
             1,
-            "Database connection pool exhaustion after a recent payment-service deployment",
+            $"Database connection pool exhaustion after a recent {incident.ServiceName ?? "service"} deployment",
             "The incident window contains a recent deployment and related commit, followed by elevated request latency, database timeout logs, and a slow PostgreSQL trace span. The temporal ordering and cross-source agreement make database connection-pool pressure the leading hypothesis.",
             confidence,
             matchedEvidence.Select(item => item.Id).ToArray());
