@@ -6,7 +6,8 @@ public enum EvidenceType
     Trace,
     Metric,
     Deployment,
-    Commit
+    Commit,
+    SourceError
 }
 
 public sealed record IncidentRequest(
