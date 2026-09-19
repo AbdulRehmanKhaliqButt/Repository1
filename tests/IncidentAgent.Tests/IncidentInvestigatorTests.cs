@@ -66,7 +66,7 @@ public sealed class IncidentInvestigatorTests
             DateTimeOffset.UtcNow));
 
         Assert.Contains(result.Evidence, item => item.Type == EvidenceType.SourceError);
-        Assert.Contains("failed", result.Summary, StringComparison.OrdinalIgnoreCase);
+        Assert.True(result.Summary.Contains("failed", StringComparison.OrdinalIgnoreCase));
         Assert.Single(result.Hypotheses);
         Assert.Contains("root cause not yet established", result.Hypotheses[0].Title);
         Assert.True(result.Hypotheses[0].Confidence < 0.50);
