@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../IncidentAgent.Core/IncidentAgent.Core.csproj" />
+    <ProjectReference Include="../IncidentAgent.Infrastructure/IncidentAgent.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
