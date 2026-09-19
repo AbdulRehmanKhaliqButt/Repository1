@@ -78,6 +78,36 @@ public sealed class IncidentInvestigator : IIncidentInvestigator
             .Cast<IncidentEvidence>()
             .ToArray();
 
+        if (matchedEvidence.Length < 3)
+        {
+            var partialSummary =
+                $"Collected {usableEvidence.Length} usable evidence items, but the signals do not yet agree strongly enough to name a specific root cause.";
+
+            if (sourceErrors > 0)
+            {
+                partialSummary += $" {sourceErrors} source(s) failed and were isolated from the investigation.";
+            }
+
+            return new IncidentInvestigation(
+                Guid.NewGuid().ToString("n"),
+                DateTimeOffset.UtcNow,
+                partialSummary,
+                evidence,
+                [
+                    new RootCauseHypothesis(
+                        1,
+                        "Partial evidence — root cause not yet established",
+                        "The available signals are insufficient for a specific causal claim. Gather additional logs, traces, deployment history, or metrics before taking corrective action.",
+                        0.30,
+                        usableEvidence.Select(item => item.Id).ToArray())
+                ],
+                [
+                    "Restore or verify failed telemetry sources.",
+                    "Collect at least two additional independent signals from logs, traces, deployments, commits, or metrics.",
+                    "Avoid automated remediation until the evidence converges."
+                ]);
+        }
+
         var confidence = Math.Min(0.95, 0.35 + (matchedEvidence.Length * 0.12));
 
         var primary = new RootCauseHypothesis(
