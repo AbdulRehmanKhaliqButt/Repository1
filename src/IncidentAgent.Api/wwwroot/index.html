@@ -85,16 +85,37 @@ runButton.addEventListener("click", async () => {
     document.querySelector("#hypothesis").textContent = primary.title;
     document.querySelector("#explanation").textContent = primary.explanation;
 
-    document.querySelector("#actions").innerHTML =
-      investigation.recommendedActions.map(action => "<li>" + action + "</li>").join("");
+    const actions = document.querySelector("#actions");
+    actions.replaceChildren();
+    for (const action of investigation.recommendedActions) {
+      const li = document.createElement("li");
+      li.textContent = action;
+      actions.appendChild(li);
+    }
 
-    document.querySelector("#evidence").innerHTML =
-      investigation.evidence.map(item => `
-        <div class="evidence">
-          <strong>${item.type}</strong> · <code>${item.source}</code><br/>
-          ${item.summary}<br/>
-          <span class="muted">${new Date(item.timestampUtc).toLocaleString()}</span>
-        </div>`).join("");
+    const evidenceContainer = document.querySelector("#evidence");
+    evidenceContainer.replaceChildren();
+
+    for (const item of investigation.evidence) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "evidence";
+
+      const type = document.createElement("strong");
+      type.textContent = item.type;
+
+      const source = document.createElement("code");
+      source.textContent = item.source;
+
+      const summary = document.createElement("div");
+      summary.textContent = item.summary;
+
+      const timestamp = document.createElement("span");
+      timestamp.className = "muted";
+      timestamp.textContent = new Date(item.timestampUtc).toLocaleString();
+
+      wrapper.append(type, document.createTextNode(" · "), source, document.createElement("br"), summary, timestamp);
+      evidenceContainer.appendChild(wrapper);
+    }
 
     result.hidden = false;
     status.textContent = " Complete";
