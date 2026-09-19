@@ -39,6 +39,25 @@ Or run the API directly:
 dotnet run --project src/IncidentAgent.Api/IncidentAgent.Api.csproj
 ```
 
+## Use real GitHub commit evidence
+
+The app runs with demo evidence by default. To use a real repository for commit evidence, copy `.env.example` to `.env` and set:
+
+```bash
+GITHUB_EVIDENCE_ENABLED=true
+GITHUB_EVIDENCE_OWNER=your-org
+GITHUB_EVIDENCE_REPOSITORY=payment-service
+GITHUB_TOKEN=your-token
+```
+
+Then run:
+
+```bash
+docker compose --env-file .env up --build
+```
+
+The token is required for private repositories and should never be committed. The adapter queries commits around the incident window and normalizes them into the same evidence model used by logs, traces, metrics, and deployments.
+
 ## API
 
 ```http
