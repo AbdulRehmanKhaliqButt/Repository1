@@ -31,6 +31,13 @@ Evidence correlation + ranked hypotheses
 
 The current providers are deterministic demo adapters. They make the repository runnable without credentials and provide a stable scenario for automated tests.
 
+## Implemented provider behavior
+
+- **GitHub commits** can now come from the real GitHub REST API when `Evidence:GitHub:Enabled=true`.
+- The demo Git commit provider remains the default so the project is runnable without credentials.
+- Each evidence provider is isolated: a failed provider is converted into `SourceError` evidence instead of failing the full investigation.
+- A specific root-cause claim requires convergence from at least three matching evidence signals. With weaker evidence, the engine returns a partial-correlation result and avoids automated remediation.
+
 ## Target architecture
 
 ```text

@@ -49,4 +49,38 @@ public sealed class IncidentInvestigatorTests
 
         Assert.All(result.Evidence, evidence => Assert.Equal("billing-service", evidence.Service));
     }
+
+    [Fact]
+    public async Task InvestigateAsync_WhenSourceFails_IsolatesFailureAndAvoidsUnsupportedRootCause()
+    {
+        var subject = new IncidentInvestigator(
+        [
+            new DemoMetricEvidenceSource(),
+            new FailingEvidenceSource()
+        ]);
+
+        var result = await subject.InvestigateAsync(new IncidentRequest(
+            "Checkout slowdown",
+            "Requests are slow.",
+            "payment-service",
+            DateTimeOffset.UtcNow));
+
+        Assert.Contains(result.Evidence, item => item.Type == EvidenceType.SourceError);
+        Assert.True(result.Summary.Contains("failed", StringComparison.OrdinalIgnoreCase));
+        Assert.Single(result.Hypotheses);
+        Assert.Contains("root cause not yet established", result.Hypotheses[0].Title);
+        Assert.True(result.Hypotheses[0].Confidence < 0.50);
+    }
+
+    private sealed class FailingEvidenceSource : IIncidentEvidenceSource
+    {
+        public string Name => "broken-loki";
+
+        public Task<IReadOnlyCollection<IncidentEvidence>> CollectAsync(
+            IncidentRequest incident,
+            CancellationToken cancellationToken = default)
+        {
+            throw new HttpRequestException("Loki is unavailable.");
+        }
+    }
 }

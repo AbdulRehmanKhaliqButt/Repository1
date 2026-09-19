@@ -7,3 +7,7 @@ services:
       - "8080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      Evidence__GitHub__Enabled: ${GITHUB_EVIDENCE_ENABLED:-false}
+      Evidence__GitHub__Owner: ${GITHUB_EVIDENCE_OWNER:-}
+      Evidence__GitHub__Repository: ${GITHUB_EVIDENCE_REPOSITORY:-}
+      Evidence__GitHub__Token: ${GITHUB_TOKEN:-}

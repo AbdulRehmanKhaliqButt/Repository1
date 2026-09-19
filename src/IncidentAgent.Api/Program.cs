@@ -9,7 +9,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-builder.Services.AddIncidentInvestigationDemo();
+builder.Services.AddIncidentInvestigation(builder.Configuration);
 
 var app = builder.Build();
 
