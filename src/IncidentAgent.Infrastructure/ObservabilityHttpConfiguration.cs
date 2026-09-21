@@ -10,7 +10,11 @@ internal static class ObservabilityHttpConfiguration
         string bearerToken,
         string tenantId = "")
     {
-        httpClient.BaseAddress ??= new Uri(baseUrl);
+        var normalizedBaseUrl = baseUrl.EndsWith("/", StringComparison.Ordinal)
+            ? baseUrl
+            : baseUrl + "/";
+
+        httpClient.BaseAddress ??= new Uri(normalizedBaseUrl, UriKind.Absolute);
 
         if (!string.IsNullOrWhiteSpace(bearerToken))
         {
