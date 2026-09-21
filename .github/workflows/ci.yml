@@ -28,6 +28,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install web dependencies
+        working-directory: src/IncidentAgent.Web
+        run: npm install --no-audit --no-fund
+
+      - name: Build React workspace
+        working-directory: src/IncidentAgent.Web
+        run: npm run build
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
