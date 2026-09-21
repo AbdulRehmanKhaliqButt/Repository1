@@ -29,11 +29,12 @@ IncidentInvestigator
 Evidence correlation + ranked hypotheses
 ```
 
-Each evidence category has a deterministic demo fallback. GitHub, Loki, Tempo, and Prometheus also have real HTTP adapters, so the same investigator can run against production-shaped telemetry without changing the domain model.
+Each evidence category has a deterministic demo fallback. GitHub, Kubernetes, Loki, Tempo, and Prometheus also have real HTTP adapters, so the same investigator can run against production-shaped telemetry without changing the domain model.
 
 ## Implemented provider behavior
 
 - **GitHub commits** can come from the GitHub REST API.
+- **Kubernetes deployments** inspect Deployments, ReplicaSets, and Pods around the incident window and normalize rollout image/version, generation, replica health, and failed Pods.
 - **Loki logs** use `/loki/api/v1/query_range` over a configurable incident window.
 - **Tempo traces** use `/api/search` with a configurable TraceQL template and normalize span attributes such as `db.system`.
 - **Prometheus metrics** use `/api/v1/query_range`, summarize series, and preserve metric labels as evidence attributes.
@@ -87,8 +88,7 @@ rules          (structured output)
 
 ## Next engineering slices
 
-1. Replace the remaining demo deployment provider with a Kubernetes adapter.
-2. Add structured LLM reasoning with mandatory evidence citations.
-3. Persist investigations in PostgreSQL.
-4. Build the React incident timeline and evidence workspace.
-5. Add evaluation cases for known incidents and measure top-1/top-3 root-cause accuracy.
+1. Add structured LLM reasoning with mandatory evidence citations.
+2. Persist investigations in PostgreSQL.
+3. Build the React incident timeline and evidence workspace.
+4. Add evaluation cases for known incidents and measure top-1/top-3 root-cause accuracy.

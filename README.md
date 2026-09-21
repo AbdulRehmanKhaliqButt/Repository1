@@ -85,6 +85,20 @@ The default queries assume a `service_name` label in Loki/Prometheus and `resour
 
 Each provider has independent `TimeoutSeconds` and `RetryCount` settings. Transient timeouts, HTTP 429s, and 5xx responses are retried; a provider that still fails is isolated as `SourceError` evidence rather than failing the complete investigation.
 
+## Use real Kubernetes deployment evidence
+
+Enable the Kubernetes provider to correlate rollout state with commits, logs, traces, and metrics:
+
+```bash
+KUBERNETES_EVIDENCE_ENABLED=true
+KUBERNETES_BASE_URL=https://kubernetes.default.svc/
+KUBERNETES_NAMESPACE=production
+KUBERNETES_BEARER_TOKEN=
+KUBERNETES_TOKEN_FILE=/var/run/secrets/kubernetes.io/serviceaccount/token
+```
+
+In-cluster deployments can use the mounted service-account token file. For local development, point `KUBERNETES_BASE_URL` at your API server and provide a bearer token from your kubeconfig/credential flow. The adapter inspects Deployments, ReplicaSets, and Pods, then emits normalized rollout evidence including image/version, generation, desired/updated/available replicas, failed Pods, and rollout health.
+
 ## API
 
 ```http
@@ -108,7 +122,6 @@ See [docs/architecture.md](docs/architecture.md).
 ## Roadmap
 
 - Real GitHub deployment/commit adapter
-- Kubernetes deployment-event adapter
 - LLM reasoning adapter with structured output and evidence citations
 - Incident timeline UI
 - Slack/Teams incident intake
