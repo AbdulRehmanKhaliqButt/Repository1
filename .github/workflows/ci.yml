@@ -56,3 +56,13 @@ jobs:
         env:
           TEST_POSTGRES_CONNECTION: Host=localhost;Port=5432;Database=incident_agent_test;Username=incident_agent;Password=incident_agent
         run: dotnet test tests/IncidentAgent.Tests/IncidentAgent.Tests.csproj -c Release
+
+      - name: Run evaluation benchmark
+        run: >
+          dotnet run
+          --project src/IncidentAgent.Evaluation/IncidentAgent.Evaluation.csproj
+          -c Release
+          --
+          --dataset benchmarks/known-incidents.json
+          --output artifacts/evaluation-results.json
+          --fail-on-regression
