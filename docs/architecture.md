@@ -11,7 +11,7 @@ It must remain useful even when the LLM is unavailable, and every hypothesis mus
 ## Current vertical slice
 
 ```text
-Browser dashboard
+React / TypeScript workspace
       |
       v
 ASP.NET Core API
@@ -44,6 +44,7 @@ Each evidence category has a deterministic demo fallback. GitHub, Kubernetes, Lo
 - **LLM reasoning** is optional and provider-abstracted for OpenAI-compatible and Anthropic APIs. Model output is parsed as structured JSON, every summary/hypothesis/action citation is checked against real evidence IDs, and any failure falls back to deterministic reasoning.
 - LLM telemetry records provider/model, token usage, latency, configurable estimated cost, and fallback reason without returning credentials.
 - **PostgreSQL persistence** stores complete investigations, evidence, hypotheses, actions, reasoning telemetry, and per-source execution telemetry. History can be filtered by service/time and prior runs can be reopened or compared.
+- **React investigation workspace** provides incident intake, history/reopen, source health, reasoning telemetry, evidence filtering/timeline, hypothesis-to-evidence navigation, and recommended actions.
 
 ## Target architecture
 
@@ -91,5 +92,4 @@ rules          (structured output)
 
 ## Next engineering slices
 
-1. Build the React incident timeline and evidence workspace.
-2. Add evaluation cases for known incidents and measure top-1/top-3 root-cause accuracy.
+1. Add evaluation cases for known incidents and measure top-1/top-3 root-cause accuracy.
