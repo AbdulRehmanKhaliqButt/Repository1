@@ -97,7 +97,7 @@ public sealed class KubernetesDeploymentEvidenceSourceTests
         Assert.Equal("3", item.Attributes["k8s.replicas.available"]);
         Assert.Equal("0", item.Attributes["k8s.failed_pods"]);
         Assert.Equal("false", item.Attributes["deployment.failed"]);
-        Assert.Contains("healthy", item.Summary, StringComparison.OrdinalIgnoreCase);
+        Assert.True(item.Summary.Contains("healthy", StringComparison.OrdinalIgnoreCase));
         Assert.Equal(3, handler.Requests.Count);
         Assert.All(handler.Requests, request =>
             Assert.Equal("Bearer cluster-token", request.Headers.Authorization?.ToString()));
@@ -190,7 +190,7 @@ public sealed class KubernetesDeploymentEvidenceSourceTests
         Assert.Equal("true", item.Attributes["deployment.failed"]);
         Assert.Equal("2", item.Attributes["k8s.replicas.unavailable"]);
         Assert.Equal("1", item.Attributes["k8s.failed_pods"]);
-        Assert.Contains("unhealthy", item.Summary, StringComparison.OrdinalIgnoreCase);
+        Assert.True(item.Summary.Contains("unhealthy", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
