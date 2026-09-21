@@ -156,6 +156,28 @@ The React/TypeScript workspace is the primary UI. It includes:
 - recommended diagnostic/remediation actions
 - responsive loading and error states
 
+## Evaluation benchmark
+
+The repository includes a repeatable known-incident benchmark under `benchmarks/known-incidents.json`. It runs through the same `IIncidentReasoner` abstraction used by the application and reports:
+
+- Top-1 root-cause accuracy
+- Top-3 root-cause accuracy
+- evidence citation precision and recall
+- unsupported-citation rate
+- reasoning latency
+- estimated model cost
+
+Run it locally with:
+
+```bash
+dotnet run --project src/IncidentAgent.Evaluation/IncidentAgent.Evaluation.csproj -- \
+  --dataset benchmarks/known-incidents.json \
+  --output artifacts/evaluation-results.json \
+  --fail-on-regression
+```
+
+CI uses regression gates of 80% Top-1 accuracy, 90% Top-3 accuracy, 95% citation precision, 80% citation recall, and no more than 5% unsupported citations. Thresholds can be overridden from the command line for experiments.
+
 ## API
 
 ```http
@@ -180,4 +202,3 @@ See [docs/architecture.md](docs/architecture.md).
 
 - Slack/Teams incident intake
 - Jira incident creation
-- Evaluation suite for root-cause accuracy and hallucination resistance
