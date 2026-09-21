@@ -32,3 +32,12 @@ services:
       Evidence__Kubernetes__Namespace: ${KUBERNETES_NAMESPACE:-default}
       Evidence__Kubernetes__BearerToken: ${KUBERNETES_BEARER_TOKEN:-}
       Evidence__Kubernetes__TokenFile: ${KUBERNETES_TOKEN_FILE:-/var/run/secrets/kubernetes.io/serviceaccount/token}
+
+      Reasoning__Llm__Enabled: ${LLM_REASONING_ENABLED:-false}
+      Reasoning__Llm__Provider: ${LLM_PROVIDER:-openai}
+      Reasoning__Llm__Model: ${LLM_MODEL:-gpt-5}
+      Reasoning__Llm__ApiKey: ${LLM_API_KEY:-}
+      Reasoning__Llm__OpenAiBaseUrl: ${LLM_OPENAI_BASE_URL:-https://api.openai.com/}
+      Reasoning__Llm__AnthropicBaseUrl: ${LLM_ANTHROPIC_BASE_URL:-https://api.anthropic.com/}
+      Reasoning__Llm__InputCostPerMillionTokens: ${LLM_INPUT_COST_PER_MILLION:-0}
+      Reasoning__Llm__OutputCostPerMillionTokens: ${LLM_OUTPUT_COST_PER_MILLION:-0}

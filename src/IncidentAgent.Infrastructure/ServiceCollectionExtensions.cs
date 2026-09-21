@@ -20,12 +20,15 @@ public static class ServiceCollectionExtensions
             configuration.GetSection(PrometheusEvidenceOptions.SectionName));
         services.Configure<KubernetesEvidenceOptions>(
             configuration.GetSection(KubernetesEvidenceOptions.SectionName));
+        services.Configure<LlmReasonerOptions>(
+            configuration.GetSection(LlmReasonerOptions.SectionName));
 
         RegisterKubernetes(services, configuration);
         RegisterGitHub(services, configuration);
         RegisterLoki(services, configuration);
         RegisterTempo(services, configuration);
         RegisterPrometheus(services, configuration);
+        RegisterReasoner(services, configuration);
 
         services.AddTransient<IIncidentInvestigator, IncidentInvestigator>();
 
@@ -87,6 +90,42 @@ public static class ServiceCollectionExtensions
         {
             services.AddSingleton<IIncidentEvidenceSource, DemoTraceEvidenceSource>();
         }
+    }
+
+    private static void RegisterReasoner(
+        IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddSingleton<DeterministicIncidentReasoner>();
+
+        var enabled = configuration.GetValue<bool>(
+            $"{LlmReasonerOptions.SectionName}:Enabled");
+        var provider = configuration[
+            $"{LlmReasonerOptions.SectionName}:Provider"]?.Trim().ToLowerInvariant();
+
+        if (!enabled)
+        {
+            services.AddSingleton<IIncidentReasoner>(serviceProvider =>
+                serviceProvider.GetRequiredService<DeterministicIncidentReasoner>());
+            return;
+        }
+
+        if (provider == "anthropic")
+        {
+            services.AddHttpClient<IIncidentLlmProvider, AnthropicIncidentLlmProvider>();
+            services.AddTransient<IIncidentReasoner, ValidatedLlmIncidentReasoner>();
+            return;
+        }
+
+        if (provider == "openai")
+        {
+            services.AddHttpClient<IIncidentLlmProvider, OpenAiIncidentLlmProvider>();
+            services.AddTransient<IIncidentReasoner, ValidatedLlmIncidentReasoner>();
+            return;
+        }
+
+        services.AddSingleton<IIncidentReasoner>(serviceProvider =>
+            serviceProvider.GetRequiredService<DeterministicIncidentReasoner>());
     }
 
     private static void RegisterPrometheus(
