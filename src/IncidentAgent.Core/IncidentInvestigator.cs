@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace IncidentAgent.Core;
 
 public sealed class IncidentInvestigator : IIncidentInvestigator
@@ -28,7 +30,7 @@ public sealed class IncidentInvestigator : IIncidentInvestigator
         var sourceResults = await Task.WhenAll(sourceTasks);
 
         var evidence = sourceResults
-            .SelectMany(result => result)
+            .SelectMany(result => result.Evidence)
             .OrderBy(item => item.TimestampUtc)
             .ToArray();
 
@@ -45,18 +47,33 @@ public sealed class IncidentInvestigator : IIncidentInvestigator
             reasoning.Hypotheses,
             reasoning.RecommendedActions)
         {
-            ReasoningTelemetry = reasoning.Telemetry
+            ReasoningTelemetry = reasoning.Telemetry,
+            SourceExecutions = sourceResults
+                .Select(result => result.Telemetry)
+                .OrderBy(item => item.Source, StringComparer.Ordinal)
+                .ToArray()
         };
     }
 
-    private static async Task<IReadOnlyCollection<IncidentEvidence>> CollectSafelyAsync(
+    private static async Task<SourceCollectionResult> CollectSafelyAsync(
         IIncidentEvidenceSource source,
         IncidentRequest incident,
         CancellationToken cancellationToken)
     {
+        var stopwatch = Stopwatch.StartNew();
+
         try
         {
-            return await source.CollectAsync(incident, cancellationToken);
+            var evidence = await source.CollectAsync(incident, cancellationToken);
+            stopwatch.Stop();
+
+            return new SourceCollectionResult(
+                evidence,
+                new SourceExecutionTelemetry(
+                    source.Name,
+                    "success",
+                    stopwatch.ElapsedMilliseconds,
+                    evidence.Count));
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -64,8 +81,10 @@ public sealed class IncidentInvestigator : IIncidentInvestigator
         }
         catch (Exception exception)
         {
-            return
-            [
+            stopwatch.Stop();
+
+            var evidence = new[]
+            {
                 new IncidentEvidence(
                     $"source-error-{source.Name}",
                     EvidenceType.SourceError,
@@ -79,7 +98,20 @@ public sealed class IncidentInvestigator : IIncidentInvestigator
                         ["source.name"] = source.Name,
                         ["exception.type"] = exception.GetType().Name
                     })
-            ];
+            };
+
+            return new SourceCollectionResult(
+                evidence,
+                new SourceExecutionTelemetry(
+                    source.Name,
+                    "error",
+                    stopwatch.ElapsedMilliseconds,
+                    evidence.Length,
+                    exception.GetType().Name));
         }
     }
+
+    private sealed record SourceCollectionResult(
+        IReadOnlyCollection<IncidentEvidence> Evidence,
+        SourceExecutionTelemetry Telemetry);
 }
