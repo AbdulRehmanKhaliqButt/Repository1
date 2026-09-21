@@ -16,7 +16,8 @@ public sealed class ServiceRegistrationTests
                 [$"{GitHubEvidenceOptions.SectionName}:Enabled"] = "true",
                 [$"{LokiEvidenceOptions.SectionName}:Enabled"] = "true",
                 [$"{TempoEvidenceOptions.SectionName}:Enabled"] = "true",
-                [$"{PrometheusEvidenceOptions.SectionName}:Enabled"] = "true"
+                [$"{PrometheusEvidenceOptions.SectionName}:Enabled"] = "true",
+                [$"{KubernetesEvidenceOptions.SectionName}:Enabled"] = "true"
             })
             .Build();
 
@@ -26,11 +27,12 @@ public sealed class ServiceRegistrationTests
         using var provider = services.BuildServiceProvider();
         var evidenceSources = provider.GetServices<IIncidentEvidenceSource>().ToArray();
 
-        Assert.Contains(evidenceSources, source => source is DemoDeploymentEvidenceSource);
+        Assert.Contains(evidenceSources, source => source is KubernetesDeploymentEvidenceSource);
         Assert.Contains(evidenceSources, source => source is GitHubCommitEvidenceSource);
         Assert.Contains(evidenceSources, source => source is LokiLogEvidenceSource);
         Assert.Contains(evidenceSources, source => source is TempoTraceEvidenceSource);
         Assert.Contains(evidenceSources, source => source is PrometheusMetricEvidenceSource);
+        Assert.DoesNotContain(evidenceSources, source => source is DemoDeploymentEvidenceSource);
         Assert.DoesNotContain(evidenceSources, source => source is DemoCommitEvidenceSource);
         Assert.DoesNotContain(evidenceSources, source => source is DemoLogEvidenceSource);
         Assert.DoesNotContain(evidenceSources, source => source is DemoTraceEvidenceSource);
