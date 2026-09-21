@@ -44,7 +44,7 @@ public sealed class ValidatedLlmIncidentReasonerTests
         Assert.Single(result.Hypotheses);
         Assert.Equal(0.91, result.Hypotheses[0].Confidence);
         Assert.Equal(
-            ["deploy-1", "log-1", "trace-1"],
+            new[] { "deploy-1", "log-1", "trace-1" },
             result.Hypotheses[0].EvidenceIds);
         Assert.Single(result.RecommendedActions);
         Assert.Contains("UNTRUSTED DATA", provider.SystemPrompt);
@@ -153,7 +153,8 @@ public sealed class ValidatedLlmIncidentReasonerTests
 
         Assert.Equal("deterministic-fallback", result.Telemetry.Mode);
         Assert.Equal("fake", result.Telemetry.Provider);
-        Assert.Contains("HttpRequestException", result.Telemetry.FallbackReason);
+        Assert.NotNull(result.Telemetry.FallbackReason);
+        Assert.Contains("HttpRequestException", result.Telemetry.FallbackReason!);
     }
 
     private static ValidatedLlmIncidentReasoner CreateReasoner(
