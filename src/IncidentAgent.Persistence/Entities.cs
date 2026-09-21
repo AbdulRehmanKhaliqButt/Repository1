@@ -27,7 +27,7 @@ public sealed class InvestigationEntity
 
 public sealed class EvidenceEntity
 {
-    public long Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string InvestigationId { get; set; } = string.Empty;
     public InvestigationEntity Investigation { get; set; } = null!;
 
@@ -43,7 +43,7 @@ public sealed class EvidenceEntity
 
 public sealed class HypothesisEntity
 {
-    public long Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string InvestigationId { get; set; } = string.Empty;
     public InvestigationEntity Investigation { get; set; } = null!;
 
@@ -56,7 +56,7 @@ public sealed class HypothesisEntity
 
 public sealed class RecommendedActionEntity
 {
-    public long Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string InvestigationId { get; set; } = string.Empty;
     public InvestigationEntity Investigation { get; set; } = null!;
 
@@ -66,7 +66,7 @@ public sealed class RecommendedActionEntity
 
 public sealed class SourceExecutionEntity
 {
-    public long Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string InvestigationId { get; set; } = string.Empty;
     public InvestigationEntity Investigation { get; set; } = null!;
 
