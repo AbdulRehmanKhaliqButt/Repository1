@@ -53,11 +53,11 @@ public sealed class EvaluationRunner(
             var supportedCitationCount = allCitations.Count(availableEvidence.Contains);
             var unsupportedCitationCount = allCitations.Length - supportedCitationCount;
 
-            var citationPrecision = allCitations.Length == 0
+            var caseCitationPrecision = allCitations.Length == 0
                 ? 1d
                 : (double)supportedCitationCount / allCitations.Length;
 
-            var unsupportedClaimRate = allCitations.Length == 0
+            var caseUnsupportedClaimRate = allCitations.Length == 0
                 ? 0d
                 : (double)unsupportedCitationCount / allCitations.Length;
 
@@ -72,7 +72,7 @@ public sealed class EvaluationRunner(
                 ? expectedIds.Count
                 : expectedIds.Count(primaryIds.Contains);
 
-            var citationRecall = expectedIds.Count == 0
+            var caseCitationRecall = expectedIds.Count == 0
                 ? 1d
                 : (double)recalled / expectedIds.Count;
 
@@ -80,9 +80,9 @@ public sealed class EvaluationRunner(
                 item.Id,
                 top1Match,
                 top3Match,
-                citationPrecision,
-                citationRecall,
-                unsupportedClaimRate,
+                caseCitationPrecision,
+                caseCitationRecall,
+                caseUnsupportedClaimRate,
                 stopwatch.ElapsedMilliseconds,
                 reasoning.Telemetry.EstimatedCostUsd,
                 primary?.Title ?? "<none>",
