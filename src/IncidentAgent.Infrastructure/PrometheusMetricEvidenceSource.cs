@@ -88,8 +88,8 @@ public sealed class PrometheusMetricEvidenceSource : IIncidentEvidenceSource
                 continue;
             }
 
-            var maxSample = samples.MaxBy(sample => sample.Value);
-            var latestSample = samples.MaxBy(sample => sample.Timestamp);
+            var maxSample = samples.OrderByDescending(sample => sample.Value).First();
+            var latestSample = samples.OrderByDescending(sample => sample.Timestamp).First();
             var labels = ReadLabels(series);
             var attributes = new Dictionary<string, string>(labels, StringComparer.OrdinalIgnoreCase)
             {
