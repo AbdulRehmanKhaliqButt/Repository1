@@ -33,3 +33,19 @@ public interface IIncidentInvestigator
         IncidentRequest incident,
         CancellationToken cancellationToken = default);
 }
+
+public interface IInvestigationStore
+{
+    Task SaveAsync(
+        IncidentRequest request,
+        IncidentInvestigation investigation,
+        CancellationToken cancellationToken = default);
+
+    Task<StoredInvestigation?> GetAsync(
+        string investigationId,
+        CancellationToken cancellationToken = default);
+
+    Task<InvestigationHistoryPage> SearchAsync(
+        InvestigationHistoryQuery query,
+        CancellationToken cancellationToken = default);
+}

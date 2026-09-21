@@ -10,6 +10,21 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: incident_agent_test
+          POSTGRES_USER: incident_agent
+          POSTGRES_PASSWORD: incident_agent
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U incident_agent -d incident_agent_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
       - uses: actions/checkout@v4
 
@@ -25,4 +40,6 @@ jobs:
         run: dotnet build src/IncidentAgent.Api/IncidentAgent.Api.csproj -c Release --no-restore
 
       - name: Test
+        env:
+          TEST_POSTGRES_CONNECTION: Host=localhost;Port=5432;Database=incident_agent_test;Username=incident_agent;Password=incident_agent
         run: dotnet test tests/IncidentAgent.Tests/IncidentAgent.Tests.csproj -c Release

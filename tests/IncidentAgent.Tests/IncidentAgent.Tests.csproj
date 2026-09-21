@@ -19,5 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="../../src/IncidentAgent.Core/IncidentAgent.Core.csproj" />
     <ProjectReference Include="../../src/IncidentAgent.Infrastructure/IncidentAgent.Infrastructure.csproj" />
+    <ProjectReference Include="../../src/IncidentAgent.Persistence/IncidentAgent.Persistence.csproj" />
   </ItemGroup>
 </Project>

@@ -33,6 +33,10 @@ public sealed class IncidentInvestigatorTests
         Assert.True(result.Hypotheses[0].Confidence >= 0.90);
         Assert.Equal(5, result.Hypotheses[0].EvidenceIds.Count);
         Assert.NotEmpty(result.RecommendedActions);
+        Assert.Equal(5, result.SourceExecutions.Count);
+        Assert.All(
+            result.SourceExecutions,
+            execution => Assert.Equal("success", execution.Status));
     }
 
     [Fact]

@@ -33,6 +33,13 @@ public sealed record RootCauseHypothesis(
     double Confidence,
     IReadOnlyList<string> EvidenceIds);
 
+public sealed record SourceExecutionTelemetry(
+    string Source,
+    string Status,
+    long DurationMs,
+    int EvidenceCount,
+    string? ErrorType = null);
+
 public sealed record ReasoningTelemetry(
     string Mode,
     string Provider,
@@ -67,4 +74,35 @@ public sealed record IncidentInvestigation(
     IReadOnlyList<string> RecommendedActions)
 {
     public ReasoningTelemetry? ReasoningTelemetry { get; init; }
+
+    public IReadOnlyList<SourceExecutionTelemetry> SourceExecutions { get; init; } =
+        Array.Empty<SourceExecutionTelemetry>();
 }
+
+public sealed record StoredInvestigation(
+    IncidentRequest Request,
+    IncidentInvestigation Investigation);
+
+public sealed record InvestigationHistoryQuery(
+    string? ServiceName = null,
+    DateTimeOffset? FromUtc = null,
+    DateTimeOffset? ToUtc = null,
+    int Page = 1,
+    int PageSize = 20);
+
+public sealed record InvestigationHistoryItem(
+    string InvestigationId,
+    DateTimeOffset GeneratedAtUtc,
+    string Title,
+    string? ServiceName,
+    DateTimeOffset StartedAtUtc,
+    string Summary,
+    string ReasoningMode,
+    double? PrimaryConfidence,
+    int EvidenceCount);
+
+public sealed record InvestigationHistoryPage(
+    IReadOnlyList<InvestigationHistoryItem> Items,
+    int Page,
+    int PageSize,
+    int TotalCount);

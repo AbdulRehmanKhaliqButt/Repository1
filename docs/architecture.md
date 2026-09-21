@@ -43,6 +43,7 @@ Each evidence category has a deterministic demo fallback. GitHub, Kubernetes, Lo
 - A specific deterministic root-cause claim requires convergence from at least three matching evidence signals. With weaker evidence, the engine returns a partial-correlation result and avoids automated remediation.
 - **LLM reasoning** is optional and provider-abstracted for OpenAI-compatible and Anthropic APIs. Model output is parsed as structured JSON, every summary/hypothesis/action citation is checked against real evidence IDs, and any failure falls back to deterministic reasoning.
 - LLM telemetry records provider/model, token usage, latency, configurable estimated cost, and fallback reason without returning credentials.
+- **PostgreSQL persistence** stores complete investigations, evidence, hypotheses, actions, reasoning telemetry, and per-source execution telemetry. History can be filtered by service/time and prior runs can be reopened or compared.
 
 ## Target architecture
 
@@ -90,6 +91,5 @@ rules          (structured output)
 
 ## Next engineering slices
 
-1. Persist investigations in PostgreSQL.
-2. Build the React incident timeline and evidence workspace.
-3. Add evaluation cases for known incidents and measure top-1/top-3 root-cause accuracy.
+1. Build the React incident timeline and evidence workspace.
+2. Add evaluation cases for known incidents and measure top-1/top-3 root-cause accuracy.

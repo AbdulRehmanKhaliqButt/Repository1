@@ -8,5 +8,6 @@
   <ItemGroup>
     <ProjectReference Include="../IncidentAgent.Core/IncidentAgent.Core.csproj" />
     <ProjectReference Include="../IncidentAgent.Infrastructure/IncidentAgent.Infrastructure.csproj" />
+    <ProjectReference Include="../IncidentAgent.Persistence/IncidentAgent.Persistence.csproj" />
   </ItemGroup>
 </Project>

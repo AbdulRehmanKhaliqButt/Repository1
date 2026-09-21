@@ -116,6 +116,20 @@ The LLM receives a serialized evidence envelope and is explicitly instructed to 
 
 The API response includes `reasoningTelemetry` with mode, provider, model, input/output tokens, latency, configurable estimated cost, and fallback reason when applicable. API keys and raw authorization headers are never included.
 
+## PostgreSQL investigation history
+
+Docker Compose includes PostgreSQL and enables persistence by default. Each run stores the request, normalized evidence, hypotheses, actions, reasoning telemetry, and per-source status/duration.
+
+Useful APIs:
+
+```http
+GET /api/investigations?serviceName=payment-service&page=1&pageSize=20
+GET /api/investigations/{investigationId}
+GET /api/investigations/compare?leftId={olderId}&rightId={newerId}
+```
+
+For direct development outside Docker, enable persistence and supply `Persistence:ConnectionString`. The application applies EF Core migrations on startup when persistence is enabled.
+
 ## API
 
 ```http

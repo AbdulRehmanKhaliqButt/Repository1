@@ -3,6 +3,7 @@ WORKDIR /src
 
 COPY src/IncidentAgent.Core/IncidentAgent.Core.csproj src/IncidentAgent.Core/
 COPY src/IncidentAgent.Infrastructure/IncidentAgent.Infrastructure.csproj src/IncidentAgent.Infrastructure/
+COPY src/IncidentAgent.Persistence/IncidentAgent.Persistence.csproj src/IncidentAgent.Persistence/
 COPY src/IncidentAgent.Api/IncidentAgent.Api.csproj src/IncidentAgent.Api/
 RUN dotnet restore src/IncidentAgent.Api/IncidentAgent.Api.csproj
 
