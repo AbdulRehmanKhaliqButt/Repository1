@@ -54,7 +54,7 @@ public sealed class ObservabilityEvidenceSourceTests
         var item = Assert.Single(evidence);
         Assert.Equal(EvidenceType.Log, item.Type);
         Assert.Equal("loki", item.Source);
-        Assert.Contains("timeout", item.Summary, StringComparison.OrdinalIgnoreCase);
+        Assert.True(item.Summary.Contains("timeout", StringComparison.OrdinalIgnoreCase));
         Assert.Equal("error", item.Attributes["level"]);
         Assert.DoesNotContain("secret-token", item.Details);
         Assert.Contains("/loki/api/v1/query_range?", handler.Requests.Single().RequestUri!.ToString());
