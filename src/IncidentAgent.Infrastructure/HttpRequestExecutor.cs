@@ -30,7 +30,7 @@ internal static class HttpRequestExecutor
                 }
 
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStringAsync(cancellationToken);
+                return await response.Content.ReadAsStringAsync(timeoutCts.Token);
             }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested && attempt < attempts)
             {
