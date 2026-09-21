@@ -26,3 +26,9 @@ services:
       Evidence__Prometheus__Enabled: ${PROMETHEUS_EVIDENCE_ENABLED:-false}
       Evidence__Prometheus__BaseUrl: ${PROMETHEUS_BASE_URL:-http://host.docker.internal:9090/}
       Evidence__Prometheus__BearerToken: ${PROMETHEUS_BEARER_TOKEN:-}
+
+      Evidence__Kubernetes__Enabled: ${KUBERNETES_EVIDENCE_ENABLED:-false}
+      Evidence__Kubernetes__BaseUrl: ${KUBERNETES_BASE_URL:-https://kubernetes.default.svc/}
+      Evidence__Kubernetes__Namespace: ${KUBERNETES_NAMESPACE:-default}
+      Evidence__Kubernetes__BearerToken: ${KUBERNETES_BEARER_TOKEN:-}
+      Evidence__Kubernetes__TokenFile: ${KUBERNETES_TOKEN_FILE:-/var/run/secrets/kubernetes.io/serviceaccount/token}
