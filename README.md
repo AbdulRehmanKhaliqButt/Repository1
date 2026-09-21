@@ -23,7 +23,7 @@ The project keeps deterministic reasoning as the baseline while allowing optiona
 - Docker
 - GitHub Actions
 - OpenTelemetry-ready evidence model
-- Static dashboard for the first end-to-end demo
+- React 19 + TypeScript investigation workspace
 
 ## Run
 
@@ -33,11 +33,21 @@ docker compose up --build
 
 Open http://localhost:8080 and click **Run investigation**.
 
-Or run the API directly:
+For local UI development, run the API and Vite separately:
 
 ```bash
-dotnet run --project src/IncidentAgent.Api/IncidentAgent.Api.csproj
+dotnet run --project src/IncidentAgent.Api/IncidentAgent.Api.csproj --urls http://localhost:5000
 ```
+
+Then in another terminal:
+
+```bash
+cd src/IncidentAgent.Web
+npm install
+npm run dev
+```
+
+Open http://localhost:5173. Vite proxies `/api` and `/health` to the ASP.NET API. The Docker image performs the React production build automatically and serves it from ASP.NET on port 8080.
 
 ## Use real GitHub commit evidence
 
@@ -130,6 +140,22 @@ GET /api/investigations/compare?leftId={olderId}&rightId={newerId}
 
 For direct development outside Docker, enable persistence and supply `Persistence:ConnectionString`. The application applies EF Core migrations on startup when persistence is enabled.
 
+## Investigation workspace
+
+The React/TypeScript workspace is the primary UI. It includes:
+
+- incident intake with service and start time
+- persisted investigation history and reopen flow
+- evidence-source health, duration and failure indicators
+- reasoning mode/model/token/cost telemetry
+- ranked root-cause hypotheses with confidence
+- clickable evidence citations that jump to the supporting timeline event
+- chronological evidence timeline
+- evidence filtering by source and type
+- expandable evidence attributes
+- recommended diagnostic/remediation actions
+- responsive loading and error states
+
 ## API
 
 ```http
@@ -152,8 +178,6 @@ See [docs/architecture.md](docs/architecture.md).
 
 ## Roadmap
 
-- Real GitHub deployment/commit adapter
-- Incident timeline UI
 - Slack/Teams incident intake
 - Jira incident creation
 - Evaluation suite for root-cause accuracy and hallucination resistance
