@@ -5,6 +5,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Development
 
@@ -41,3 +44,25 @@ services:
       Reasoning__Llm__AnthropicBaseUrl: ${LLM_ANTHROPIC_BASE_URL:-https://api.anthropic.com/}
       Reasoning__Llm__InputCostPerMillionTokens: ${LLM_INPUT_COST_PER_MILLION:-0}
       Reasoning__Llm__OutputCostPerMillionTokens: ${LLM_OUTPUT_COST_PER_MILLION:-0}
+
+      Persistence__Enabled: ${PERSISTENCE_ENABLED:-true}
+      Persistence__ConnectionString: ${POSTGRES_CONNECTION_STRING:-Host=postgres;Port=5432;Database=incident_agent;Username=incident_agent;Password=incident_agent}
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-incident_agent}
+      POSTGRES_USER: ${POSTGRES_USER:-incident_agent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-incident_agent}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-incident_agent} -d ${POSTGRES_DB:-incident_agent}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - incident-agent-postgres:/var/lib/postgresql/data
+
+volumes:
+  incident-agent-postgres:
