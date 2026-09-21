@@ -13,7 +13,7 @@ A demo checkout incident is investigated end to end:
 5. Tempo-style traces show a slow PostgreSQL span.
 6. The investigation engine ranks an evidence-backed root-cause hypothesis and proposes remediation actions.
 
-The project intentionally starts with deterministic reasoning and clean provider interfaces. Real OpenAI/Anthropic, Grafana/Loki/Tempo, GitHub, Kubernetes, and OpenTelemetry adapters can be added without rewriting the domain model.
+The project keeps deterministic reasoning as the baseline while allowing optional OpenAI-compatible or Anthropic reasoning over normalized evidence. GitHub, Kubernetes, Loki, Tempo, and Prometheus can all supply real evidence without changing the domain model.
 
 ## Tech
 
@@ -99,6 +99,23 @@ KUBERNETES_TOKEN_FILE=/var/run/secrets/kubernetes.io/serviceaccount/token
 
 In-cluster deployments can use the mounted service-account token file. For local development, point `KUBERNETES_BASE_URL` at your API server and provide a bearer token from your kubeconfig/credential flow. The adapter inspects Deployments, ReplicaSets, and Pods, then emits normalized rollout evidence including image/version, generation, desired/updated/available replicas, failed Pods, and rollout health.
 
+## Optional LLM reasoning
+
+The deterministic reasoner is always available. Enable the LLM layer only when you want model-assisted synthesis:
+
+```bash
+LLM_REASONING_ENABLED=true
+LLM_PROVIDER=openai
+LLM_MODEL=gpt-5
+LLM_API_KEY=your-key
+```
+
+Set `LLM_PROVIDER=anthropic` and an Anthropic model name to use the Anthropic Messages API instead. Base URLs are configurable for gateways or compatible endpoints.
+
+The LLM receives a serialized evidence envelope and is explicitly instructed to treat logs, commits, traces, and all other evidence as untrusted data. Every summary, hypothesis, and recommended action must cite existing evidence IDs. Unknown or missing citations, malformed JSON, provider errors, or timeouts cause an automatic fallback to deterministic reasoning.
+
+The API response includes `reasoningTelemetry` with mode, provider, model, input/output tokens, latency, configurable estimated cost, and fallback reason when applicable. API keys and raw authorization headers are never included.
+
 ## API
 
 ```http
@@ -122,7 +139,6 @@ See [docs/architecture.md](docs/architecture.md).
 ## Roadmap
 
 - Real GitHub deployment/commit adapter
-- LLM reasoning adapter with structured output and evidence citations
 - Incident timeline UI
 - Slack/Teams incident intake
 - Jira incident creation
