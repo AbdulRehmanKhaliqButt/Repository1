@@ -40,7 +40,9 @@ Each evidence category has a deterministic demo fallback. GitHub, Kubernetes, Lo
 - **Prometheus metrics** use `/api/v1/query_range`, summarize series, and preserve metric labels as evidence attributes.
 - Every real provider can be enabled independently; disabled providers fall back to deterministic demo evidence.
 - Each evidence provider is isolated: a failed provider is converted into `SourceError` evidence instead of failing the full investigation.
-- A specific root-cause claim requires convergence from at least three matching evidence signals. With weaker evidence, the engine returns a partial-correlation result and avoids automated remediation.
+- A specific deterministic root-cause claim requires convergence from at least three matching evidence signals. With weaker evidence, the engine returns a partial-correlation result and avoids automated remediation.
+- **LLM reasoning** is optional and provider-abstracted for OpenAI-compatible and Anthropic APIs. Model output is parsed as structured JSON, every summary/hypothesis/action citation is checked against real evidence IDs, and any failure falls back to deterministic reasoning.
+- LLM telemetry records provider/model, token usage, latency, configurable estimated cost, and fallback reason without returning credentials.
 
 ## Target architecture
 
@@ -83,12 +85,11 @@ rules          (structured output)
 2. **Provider abstraction** — GitHub, Grafana, Kubernetes, and cloud sources implement the same evidence-source contract.
 3. **Deterministic baseline** — the platform remains testable without an LLM.
 4. **Human approval for remediation** — investigation can be automated; production changes require explicit approval.
-5. **Observability of the investigator itself** — future phases will emit OpenTelemetry traces, token cost, latency, source failures, and confidence calibration.
+5. **Observability of the investigator itself** — reasoning mode, token cost, latency, and fallback reasons are surfaced now; broader OpenTelemetry instrumentation and confidence calibration can extend this.
 6. **Tenant boundaries** — credentials and evidence must be isolated per customer in a real deployment.
 
 ## Next engineering slices
 
-1. Add structured LLM reasoning with mandatory evidence citations.
-2. Persist investigations in PostgreSQL.
-3. Build the React incident timeline and evidence workspace.
-4. Add evaluation cases for known incidents and measure top-1/top-3 root-cause accuracy.
+1. Persist investigations in PostgreSQL.
+2. Build the React incident timeline and evidence workspace.
+3. Add evaluation cases for known incidents and measure top-1/top-3 root-cause accuracy.
