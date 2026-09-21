@@ -18,9 +18,10 @@ public static class ServiceCollectionExtensions
             configuration.GetSection(TempoEvidenceOptions.SectionName));
         services.Configure<PrometheusEvidenceOptions>(
             configuration.GetSection(PrometheusEvidenceOptions.SectionName));
+        services.Configure<KubernetesEvidenceOptions>(
+            configuration.GetSection(KubernetesEvidenceOptions.SectionName));
 
-        services.AddSingleton<IIncidentEvidenceSource, DemoDeploymentEvidenceSource>();
-
+        RegisterKubernetes(services, configuration);
         RegisterGitHub(services, configuration);
         RegisterLoki(services, configuration);
         RegisterTempo(services, configuration);
@@ -29,6 +30,21 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IIncidentInvestigator, IncidentInvestigator>();
 
         return services;
+    }
+
+    private static void RegisterKubernetes(
+        IServiceCollection services,
+        IConfiguration configuration)
+    {
+        if (configuration.GetValue<bool>(
+                $"{KubernetesEvidenceOptions.SectionName}:Enabled"))
+        {
+            services.AddHttpClient<IIncidentEvidenceSource, KubernetesDeploymentEvidenceSource>();
+        }
+        else
+        {
+            services.AddSingleton<IIncidentEvidenceSource, DemoDeploymentEvidenceSource>();
+        }
     }
 
     private static void RegisterGitHub(
