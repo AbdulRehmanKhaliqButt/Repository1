@@ -29,12 +29,15 @@ IncidentInvestigator
 Evidence correlation + ranked hypotheses
 ```
 
-The current providers are deterministic demo adapters. They make the repository runnable without credentials and provide a stable scenario for automated tests.
+Each evidence category has a deterministic demo fallback. GitHub, Loki, Tempo, and Prometheus also have real HTTP adapters, so the same investigator can run against production-shaped telemetry without changing the domain model.
 
 ## Implemented provider behavior
 
-- **GitHub commits** can now come from the real GitHub REST API when `Evidence:GitHub:Enabled=true`.
-- The demo Git commit provider remains the default so the project is runnable without credentials.
+- **GitHub commits** can come from the GitHub REST API.
+- **Loki logs** use `/loki/api/v1/query_range` over a configurable incident window.
+- **Tempo traces** use `/api/search` with a configurable TraceQL template and normalize span attributes such as `db.system`.
+- **Prometheus metrics** use `/api/v1/query_range`, summarize series, and preserve metric labels as evidence attributes.
+- Every real provider can be enabled independently; disabled providers fall back to deterministic demo evidence.
 - Each evidence provider is isolated: a failed provider is converted into `SourceError` evidence instead of failing the full investigation.
 - A specific root-cause claim requires convergence from at least three matching evidence signals. With weaker evidence, the engine returns a partial-correlation result and avoids automated remediation.
 
@@ -84,9 +87,8 @@ rules          (structured output)
 
 ## Next engineering slices
 
-1. Replace demo Git/deployment providers with GitHub + Kubernetes adapters.
-2. Add real OpenTelemetry/Tempo and Loki providers.
-3. Add Prometheus query adapter and configurable incident windows.
-4. Add structured LLM reasoner that cites evidence IDs.
-5. Persist investigations in PostgreSQL.
-6. Add evaluation cases for known incidents and measure top-1/top-3 root-cause accuracy.
+1. Replace the remaining demo deployment provider with a Kubernetes adapter.
+2. Add structured LLM reasoning with mandatory evidence citations.
+3. Persist investigations in PostgreSQL.
+4. Build the React incident timeline and evidence workspace.
+5. Add evaluation cases for known incidents and measure top-1/top-3 root-cause accuracy.

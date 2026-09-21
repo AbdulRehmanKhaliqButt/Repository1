@@ -58,6 +58,33 @@ docker compose --env-file .env up --build
 
 The token is required for private repositories and should never be committed. The adapter queries commits around the incident window and normalizes them into the same evidence model used by logs, traces, metrics, and deployments.
 
+## Use real observability evidence
+
+Loki, Tempo, and Prometheus are individually configurable. Demo providers remain the default so the app still runs without external infrastructure.
+
+Example `.env` values:
+
+```bash
+LOKI_EVIDENCE_ENABLED=true
+LOKI_BASE_URL=http://localhost:3100/
+
+TEMPO_EVIDENCE_ENABLED=true
+TEMPO_BASE_URL=http://localhost:3200/
+
+PROMETHEUS_EVIDENCE_ENABLED=true
+PROMETHEUS_BASE_URL=http://localhost:9090/
+```
+
+Run with:
+
+```bash
+docker compose --env-file .env up --build
+```
+
+The default queries assume a `service_name` label in Loki/Prometheus and `resource.service.name` in Tempo. Override `Evidence:Loki:QueryTemplate`, `Evidence:Tempo:TraceQlTemplate`, or `Evidence:Prometheus:QueryTemplate` for your telemetry conventions.
+
+Each provider has independent `TimeoutSeconds` and `RetryCount` settings. Transient timeouts, HTTP 429s, and 5xx responses are retried; a provider that still fails is isolated as `SourceError` evidence rather than failing the complete investigation.
+
 ## API
 
 ```http
@@ -81,9 +108,6 @@ See [docs/architecture.md](docs/architecture.md).
 ## Roadmap
 
 - Real GitHub deployment/commit adapter
-- OpenTelemetry/Tempo trace adapter
-- Loki/OpenSearch log adapter
-- Prometheus metrics adapter
 - Kubernetes deployment-event adapter
 - LLM reasoning adapter with structured output and evidence citations
 - Incident timeline UI

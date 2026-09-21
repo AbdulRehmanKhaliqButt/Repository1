@@ -7,7 +7,22 @@ services:
       - "8080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+
       Evidence__GitHub__Enabled: ${GITHUB_EVIDENCE_ENABLED:-false}
       Evidence__GitHub__Owner: ${GITHUB_EVIDENCE_OWNER:-}
       Evidence__GitHub__Repository: ${GITHUB_EVIDENCE_REPOSITORY:-}
       Evidence__GitHub__Token: ${GITHUB_TOKEN:-}
+
+      Evidence__Loki__Enabled: ${LOKI_EVIDENCE_ENABLED:-false}
+      Evidence__Loki__BaseUrl: ${LOKI_BASE_URL:-http://host.docker.internal:3100/}
+      Evidence__Loki__BearerToken: ${LOKI_BEARER_TOKEN:-}
+      Evidence__Loki__TenantId: ${LOKI_TENANT_ID:-}
+
+      Evidence__Tempo__Enabled: ${TEMPO_EVIDENCE_ENABLED:-false}
+      Evidence__Tempo__BaseUrl: ${TEMPO_BASE_URL:-http://host.docker.internal:3200/}
+      Evidence__Tempo__BearerToken: ${TEMPO_BEARER_TOKEN:-}
+      Evidence__Tempo__TenantId: ${TEMPO_TENANT_ID:-}
+
+      Evidence__Prometheus__Enabled: ${PROMETHEUS_EVIDENCE_ENABLED:-false}
+      Evidence__Prometheus__BaseUrl: ${PROMETHEUS_BASE_URL:-http://host.docker.internal:9090/}
+      Evidence__Prometheus__BearerToken: ${PROMETHEUS_BEARER_TOKEN:-}

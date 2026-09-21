@@ -12,16 +12,30 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<GitHubEvidenceOptions>(
             configuration.GetSection(GitHubEvidenceOptions.SectionName));
+        services.Configure<LokiEvidenceOptions>(
+            configuration.GetSection(LokiEvidenceOptions.SectionName));
+        services.Configure<TempoEvidenceOptions>(
+            configuration.GetSection(TempoEvidenceOptions.SectionName));
+        services.Configure<PrometheusEvidenceOptions>(
+            configuration.GetSection(PrometheusEvidenceOptions.SectionName));
 
         services.AddSingleton<IIncidentEvidenceSource, DemoDeploymentEvidenceSource>();
-        services.AddSingleton<IIncidentEvidenceSource, DemoMetricEvidenceSource>();
-        services.AddSingleton<IIncidentEvidenceSource, DemoLogEvidenceSource>();
-        services.AddSingleton<IIncidentEvidenceSource, DemoTraceEvidenceSource>();
 
-        var useGitHub = configuration.GetValue<bool>(
-            $"{GitHubEvidenceOptions.SectionName}:Enabled");
+        RegisterGitHub(services, configuration);
+        RegisterLoki(services, configuration);
+        RegisterTempo(services, configuration);
+        RegisterPrometheus(services, configuration);
 
-        if (useGitHub)
+        services.AddTransient<IIncidentInvestigator, IncidentInvestigator>();
+
+        return services;
+    }
+
+    private static void RegisterGitHub(
+        IServiceCollection services,
+        IConfiguration configuration)
+    {
+        if (configuration.GetValue<bool>($"{GitHubEvidenceOptions.SectionName}:Enabled"))
         {
             services.AddHttpClient<IIncidentEvidenceSource, GitHubCommitEvidenceSource>();
         }
@@ -29,9 +43,47 @@ public static class ServiceCollectionExtensions
         {
             services.AddSingleton<IIncidentEvidenceSource, DemoCommitEvidenceSource>();
         }
+    }
 
-        services.AddTransient<IIncidentInvestigator, IncidentInvestigator>();
+    private static void RegisterLoki(
+        IServiceCollection services,
+        IConfiguration configuration)
+    {
+        if (configuration.GetValue<bool>($"{LokiEvidenceOptions.SectionName}:Enabled"))
+        {
+            services.AddHttpClient<IIncidentEvidenceSource, LokiLogEvidenceSource>();
+        }
+        else
+        {
+            services.AddSingleton<IIncidentEvidenceSource, DemoLogEvidenceSource>();
+        }
+    }
 
-        return services;
+    private static void RegisterTempo(
+        IServiceCollection services,
+        IConfiguration configuration)
+    {
+        if (configuration.GetValue<bool>($"{TempoEvidenceOptions.SectionName}:Enabled"))
+        {
+            services.AddHttpClient<IIncidentEvidenceSource, TempoTraceEvidenceSource>();
+        }
+        else
+        {
+            services.AddSingleton<IIncidentEvidenceSource, DemoTraceEvidenceSource>();
+        }
+    }
+
+    private static void RegisterPrometheus(
+        IServiceCollection services,
+        IConfiguration configuration)
+    {
+        if (configuration.GetValue<bool>($"{PrometheusEvidenceOptions.SectionName}:Enabled"))
+        {
+            services.AddHttpClient<IIncidentEvidenceSource, PrometheusMetricEvidenceSource>();
+        }
+        else
+        {
+            services.AddSingleton<IIncidentEvidenceSource, DemoMetricEvidenceSource>();
+        }
     }
 }
